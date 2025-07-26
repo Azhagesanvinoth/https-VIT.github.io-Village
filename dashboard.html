@@ -92,39 +92,43 @@ function logout() {
 }
 </script>
 <script>
-function submitData() {
-  let name = document.getElementById('name').value;
-  let charts = document.getElementById('charts').value;
-  let remarks = document.getElementById('remarks').value;
+const scriptURL = "https://script.google.com/macros/s/AKfycbzolFqb4hRSdQaQIcZFBqlZ6qk-m-HUnlh_Ap4-NivFK5fB5Z5fMcfdARNLBadZwFDozQ/exec"; // paste your Google Apps Script URL
 
-  fetch('https://script.google.com/macros/s/AKfycby47gQ6KnRz4_o62h7hMQmkekgg7JEbNsTS6wugKu0RsAfDmI6RrPlGHMZFRzOVW7KREw/exec
-', {
+function submitData() {
+  let name = document.getElementById('coderName').value;
+  let charts = document.getElementById('charts').value;
+  let remarks = document.getElementById('notes').value;
+
+  fetch(scriptURL, {
     method: 'POST',
     body: JSON.stringify({
       name: name,
       charts: charts,
       remarks: remarks
-    })
+    }),
+    headers: { 'Content-Type': 'application/json' }
   })
-  .then(response => response.text())
-  .then(data => {
+  .then(res => res.text())
+  .then(msg => {
     document.getElementById('msg').innerText = "Data Saved!";
     loadData();
-  });
+  })
+  .catch(err => console.error('Error!', err));
 }
 
 function loadData() {
-  fetch('https://script.google.com/macros/s/AKfycby47gQ6KnRz4_o62h7hMQmkekgg7JEbNsTS6wugKu0RsAfDmI6RrPlGHMZFRzOVW7KREw/exec')
-  .then(response => response.json())
-  .then(data => {
-    let list = document.getElementById('dataList');
-    list.innerHTML = "";
-    for (let i = 1; i < data.length; i++) {
-      list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
-    }
-  });
+  fetch(scriptURL)
+    .then(response => response.json())
+    .then(data => {
+      let list = document.getElementById('dataList');
+      list.innerHTML = "";
+      for (let i = 1; i < data.length; i++) {
+        list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
+      }
+    });
 }
 
 window.onload = loadData;
 </script>
+
 
