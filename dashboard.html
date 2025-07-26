@@ -7,7 +7,7 @@
   <style>
     body{font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:20px;}
     h1{margin-bottom:10px;}
-    .container{max-width:1200px; margin:auto;}
+    .container{max-width:1100px; margin:auto;}
     .card{
       background:#fff; padding:20px; border-radius:10px;
       box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:20px;
@@ -20,8 +20,9 @@
       width:100%; padding:9px 10px; border:1px solid #ddd;
       border-radius:6px; font-size:14px; box-sizing: border-box;
     }
+    textarea{min-height:80px; resize: vertical;}
     button{
-      background:#007bff; color:#fff; border:none; padding:8px 12px;
+      background:#007bff; color:#fff; border:none; padding:10px 16px;
       border-radius:6px; cursor:pointer; font-size:14px;
     }
     button:disabled{opacity:0.6; cursor:not-allowed;}
@@ -34,9 +35,6 @@
     th{background:#f1f5f9;}
     #msg{margin-top:10px; font-weight:bold;}
     .actions{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
-    .edit-btn{background:#28a745;}
-    .delete-btn{background:#dc3545;}
-    .filter-bar { margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap; }
     @media (max-width:600px){
       th, td{white-space:normal;}
     }
@@ -48,42 +46,17 @@
 
     <!-- Form -->
     <div class="card">
-      <h2>Add / Update Entry</h2>
+      <h2>Add Entry</h2>
       <form id="prodForm" onsubmit="submitData(event)">
-        <input type="hidden" id="rowIndex" value="">
         <div class="grid">
-          <div>
-            <label for="name">Name</label>
-            <input id="name" required>
-          </div>
-          <div>
-            <label for="empId">Emp ID</label>
-            <input id="empId" required>
-          </div>
-          <div>
-            <label for="project">Project</label>
-            <input id="project" required>
-          </div>
-          <div>
-            <label for="subProject">Sub Project</label>
-            <input id="subProject" required>
-          </div>
-          <div>
-            <label for="chartId">Chart ID</label>
-            <input id="chartId" required>
-          </div>
-          <div>
-            <label for="pageNo">Page No</label>
-            <input id="pageNo" type="number" min="0" required>
-          </div>
-          <div>
-            <label for="dos">DOS (Date of Service)</label>
-            <input id="dos" type="date" required>
-          </div>
-          <div>
-            <label for="icd">ICD</label>
-            <input id="icd" required>
-          </div>
+          <div><label for="name">Name</label><input id="name" required></div>
+          <div><label for="empId">Emp ID</label><input id="empId" required></div>
+          <div><label for="project">Project</label><input id="project" required></div>
+          <div><label for="subProject">Sub Project</label><input id="subProject" required></div>
+          <div><label for="chartId">Chart ID</label><input id="chartId" required></div>
+          <div><label for="pageNo">Page No</label><input id="pageNo" type="number" min="0" required></div>
+          <div><label for="dos">DOS</label><input id="dos" type="date" required></div>
+          <div><label for="icd">ICD</label><input id="icd" required></div>
           <div>
             <label for="status">Status</label>
             <select id="status" required>
@@ -96,23 +69,13 @@
           </div>
         </div>
         <br>
-        <button type="submit" id="submitBtn">Save</button>
+        <button type="submit" id="submitBtn">Submit</button>
         <span id="msg"></span>
       </form>
     </div>
 
     <!-- Table -->
     <div class="card">
-      <div class="filter-bar">
-        <input type="text" id="searchBox" placeholder="Search by Name/Emp ID..." oninput="filterTable()">
-        <select id="statusFilter" onchange="filterTable()">
-          <option value="">All Status</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-          <option value="On Hold">On Hold</option>
-          <option value="Query">Query</option>
-        </select>
-      </div>
       <div class="actions">
         <button onclick="loadData()">Reload Data</button>
         <button onclick="exportTableToCSV()">Export CSV</button>
@@ -132,23 +95,17 @@
               <th>DOS</th>
               <th>ICD</th>
               <th>Status</th>
-              <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- rows go here -->
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
     </div>
   </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxj4NpOr-e88PNNLt94isXfw6oLmibuM98Sw1R_sgBQ2BEx5ouzzgwCLRliuzs8lFw26g/exec"; // Replace with your /exec URL
+const API = "https://script.google.com/macros/s/AKfycbyd_fWxW1J8GyXx_K7ZWzOX5xAQbQBXvuXrNBpxzspaiDAUHfOcP4yUuhT6MXtBhsxVFA/exec";
 
-let allData = [];
-
-// Submit form data
 async function submitData(evt){
   evt.preventDefault();
   const btn = document.getElementById('submitBtn');
@@ -173,6 +130,7 @@ async function submitData(evt){
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
+
     msg.style.color = "green";
     msg.textContent = "Saved!";
     document.getElementById('prodForm').reset();
@@ -180,96 +138,61 @@ async function submitData(evt){
   }catch(e){
     console.error(e);
     msg.style.color = "red";
-    msg.textContent = "Failed!";
+    msg.textContent = "Failed to save!";
   }finally{
     btn.disabled = false;
     setTimeout(()=> msg.textContent="", 3000);
   }
 }
 
-// Load data
 async function loadData(){
   const tbody = document.querySelector("#dataTable tbody");
-  tbody.innerHTML = "<tr><td colspan='12'>Loading...</td></tr>";
+  tbody.innerHTML = "<tr><td colspan='11'>Loading...</td></tr>";
 
   try{
     const res = await fetch(API);
     const rows = await res.json();
-    allData = rows;
-    renderTable(rows);
+    if(!rows || rows.length <= 1){
+      tbody.innerHTML = "<tr><td colspan='11'>No data</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = "";
+    for(let i=1; i<rows.length; i++){
+      const r = rows[i];
+      const [
+        timestamp="", name="", empId="", project="", subProject="",
+        chartId="", pageNo="", dos="", icd="", status=""
+      ] = r;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i}</td>
+        <td>${timestamp}</td>
+        <td>${name}</td>
+        <td>${empId}</td>
+        <td>${project}</td>
+        <td>${subProject}</td>
+        <td>${chartId}</td>
+        <td>${pageNo}</td>
+        <td>${dos}</td>
+        <td>${icd}</td>
+        <td>${status}</td>
+      `;
+      tbody.appendChild(tr);
+    }
   }catch(e){
     console.error(e);
-    tbody.innerHTML = "<tr><td colspan='12'>Failed to load data</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='11'>Failed to load data</td></tr>";
   }
 }
 
-function renderTable(rows){
-  const tbody = document.querySelector("#dataTable tbody");
-  if(!rows || rows.length <= 1){
-    tbody.innerHTML = "<tr><td colspan='12'>No data</td></tr>";
-    return;
-  }
-  tbody.innerHTML = "";
-  for(let i=1; i<rows.length; i++){
-    const r = rows[i];
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${i}</td>
-      <td>${r[0]}</td>
-      <td>${r[1]}</td>
-      <td>${r[2]}</td>
-      <td>${r[3]}</td>
-      <td>${r[4]}</td>
-      <td>${r[5]}</td>
-      <td>${r[6]}</td>
-      <td>${r[7]}</td>
-      <td>${r[8]}</td>
-      <td>${r[9]}</td>
-      <td>
-        <button class="edit-btn" onclick="editRow(${i})">Edit</button>
-        <button class="delete-btn" onclick="deleteRow(${i})">Delete</button>
-      </td>`;
-    tbody.appendChild(tr);
-  }
-}
-
-// Filter table by search and status
-function filterTable(){
-  const query = document.getElementById("searchBox").value.toLowerCase();
-  const statusFilter = document.getElementById("statusFilter").value;
-  const filtered = allData.filter((row, idx) => {
-    if(idx === 0) return false; // skip header
-    const text = (row[1]+" "+row[2]).toLowerCase();
-    return (text.includes(query) && (statusFilter === "" || row[9] === statusFilter));
-  });
-  renderTable([allData[0], ...filtered]);
-}
-
-// Edit (prefill form)
-function editRow(index){
-  const r = allData[index];
-  document.getElementById('name').value = r[1];
-  document.getElementById('empId').value = r[2];
-  document.getElementById('project').value = r[3];
-  document.getElementById('subProject').value = r[4];
-  document.getElementById('chartId').value = r[5];
-  document.getElementById('pageNo').value = r[6];
-  document.getElementById('dos').value = r[7];
-  document.getElementById('icd').value = r[8];
-  document.getElementById('status').value = r[9];
-}
-
-// Delete Row (placeholder - requires Google Apps Script change)
-function deleteRow(index){
-  alert("Delete row feature requires Apps Script update (not implemented yet).");
-}
-
-// Export CSV
 function exportTableToCSV(filename = "production_data.csv"){
   const rows = Array.from(document.querySelectorAll("#dataTable tr"));
   const csv = rows.map(tr => Array.from(tr.querySelectorAll("th,td"))
                       .map(td => `"${td.innerText.replace(/"/g, '""')}"`)
                       .join(",")).join("\n");
+
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement("a");
   const url = URL.createObjectURL(blob);
