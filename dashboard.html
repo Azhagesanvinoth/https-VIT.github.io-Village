@@ -101,11 +101,7 @@ function submitData() {
 
   fetch(scriptURL, {
     method: 'POST',
-    body: JSON.stringify({
-      name: name,
-      charts: charts,
-      remarks: remarks
-    }),
+    body: JSON.stringify({ name: name, charts: charts, remarks: remarks }),
     headers: { 'Content-Type': 'application/json' }
   })
   .then(res => res.text())
@@ -130,5 +126,6 @@ function loadData() {
 
 window.onload = loadData;
 </script>
+
 
 
