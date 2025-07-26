@@ -265,3 +265,35 @@ window.onload = loadData;
 </script>
 </body>
 </html>
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActive().getSheetByName('Sheet1'); // or your sheet name
+  const data = JSON.parse(e.postData.contents);
+
+  // Write header once manually in row 1:
+  // Timestamp | Name | Emp ID | Project | Sub Project | Chart ID | Page No | DOS | ICD | Status
+
+  sheet.appendRow([
+    new Date(),
+    data.name,
+    data.empId,
+    data.project,
+    data.subProject,
+    data.chartId,
+    data.pageNo,
+    data.dos,
+    data.icd,
+    data.status
+  ]);
+
+  return ContentService.createTextOutput('OK')
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
+function doGet(e) {
+  const sheet = SpreadsheetApp.getActive().getSheetByName('Sheet1'); // or your sheet name
+  const rows = sheet.getDataRange().getValues(); // 2D array
+  return ContentService
+    .createTextOutput(JSON.stringify(rows))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
