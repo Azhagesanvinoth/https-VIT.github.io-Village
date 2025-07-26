@@ -91,5 +91,40 @@ function logout() {
   window.location.href = "index.html";
 }
 </script>
+<script>
+function submitData() {
+  let name = document.getElementById('name').value;
+  let charts = document.getElementById('charts').value;
+  let remarks = document.getElementById('remarks').value;
+
+  fetch('YOUR_GOOGLE_SCRIPT_WEB_APP_URL', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: name,
+      charts: charts,
+      remarks: remarks
+    })
+  })
+  .then(response => response.text())
+  .then(data => {
+    document.getElementById('msg').innerText = "Data Saved!";
+    loadData();
+  });
+}
+
+function loadData() {
+  fetch('YOUR_GOOGLE_SCRIPT_WEB_APP_URL')
+  .then(response => response.json())
+  .then(data => {
+    let list = document.getElementById('dataList');
+    list.innerHTML = "";
+    for (let i = 1; i < data.length; i++) {
+      list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
+    }
+  });
+}
+
+window.onload = loadData;
+</script>
 
 
