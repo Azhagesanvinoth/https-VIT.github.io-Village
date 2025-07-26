@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Village INFO Tech - Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    th {
+      background-color: #007BFF;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h2>Admin Panel - Production Data</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Coder Name</th>
+        <th>Charts Completed</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="dataTable">
+      <!-- Data will be shown here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Example static data (Later, we can make it dynamic)
+    let sampleData = [
+      { name: "Anitha", charts: 35, notes: "Completed early" },
+      { name: "Vinoth", charts: 28, notes: "Pending review" },
+      { name: "Ranjitha", charts: 40, notes: "All verified" }
+    ];
+
+    function loadTable() {
+      let table = document.getElementById('dataTable');
+      sampleData.forEach(item => {
+        let row = `<tr><td>${item.name}</td><td>${item.charts}</td><td>${item.notes}</td></tr>`;
+        table.innerHTML += row;
+      });
+    }
+
+    window.onload = loadTable;
+  </script>
+</body>
+</html>
