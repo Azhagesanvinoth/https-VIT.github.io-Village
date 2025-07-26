@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Village INFO Tech - Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #eef2f7;
+      padding: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    .form-box {
+      max-width: 400px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #1e7e34;
+    }
+    .data-display {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Dashboard - Daily Production</h2>
+  <div class="form-box">
+    <input type="text" id="coderName" placeholder="Coder Name">
+    <input type="number" id="charts" placeholder="Charts Completed">
+    <textarea id="notes" placeholder="Notes or Comments"></textarea>
+    <button onclick="saveData()">Submit</button>
+    <p id="msg" style="color:green;"></p>
+  </div>
+
+  <div class="data-display">
+    <h3>Submitted Data:</h3>
+    <ul id="dataList"></ul>
+  </div>
+
+  <script>
+    function saveData() {
+      let name = document.getElementById('coderName').value;
+      let charts = document.getElementById('charts').value;
+      let notes = document.getElementById('notes').value;
+
+      if (name && charts) {
+        let li = document.createElement('li');
+        li.textContent = name + " - " + charts + " charts - " + notes;
+        document.getElementById('dataList').appendChild(li);
+        document.getElementById('msg').innerText = "Data Saved!";
+      } else {
+        document.getElementById('msg').innerText = "Please fill all fields!";
+      }
+    }
+  </script>
+</body>
+</html>
