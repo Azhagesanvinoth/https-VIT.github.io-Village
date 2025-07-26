@@ -1,129 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Village INFO Tech - Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Village INFO Tech – Production Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #eef2f7;
-      padding: 20px;
+    body{font-family: Arial, sans-serif; background:#f5f7fb; margin:0; padding:20px;}
+    h1{margin-bottom:10px;}
+    .container{max-width:1100px; margin:auto;}
+    .card{
+      background:#fff; padding:20px; border-radius:10px;
+      box-shadow:0 2px 8px rgba(0,0,0,.06); margin-bottom:20px;
     }
-    h2 {
-      text-align: center;
-      color: #333;
+    .grid{
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:15px;
     }
-    .form-box {
-      max-width: 400px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    label{font-size:14px; font-weight:600; margin-bottom:4px; display:block;}
+    input, select, textarea{
+      width:100%; padding:9px 10px; border:1px solid #ddd;
+      border-radius:6px; font-size:14px; box-sizing: border-box;
     }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+    textarea{min-height:80px; resize: vertical;}
+    button{
+      background:#007bff; color:#fff; border:none; padding:10px 16px;
+      border-radius:6px; cursor:pointer; font-size:14px;
     }
-    button {
-      width: 100%;
-      padding: 10px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+    button:disabled{opacity:0.6; cursor:not-allowed;}
+    table{
+      width:100%; border-collapse:collapse; font-size:14px; background:#fff;
     }
-    button:hover {
-      background: #1e7e34;
+    th, td{
+      border:1px solid #e5e7eb; padding:8px; text-align:left; white-space:nowrap;
     }
-    .data-display {
-      margin-top: 30px;
+    th{background:#f1f5f9;}
+    #msg{margin-top:10px; font-weight:bold;}
+    .actions{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+    @media (max-width:600px){
+      th, td{white-space:normal;}
     }
   </style>
 </head>
 <body>
-  <h2>Dashboard - Daily Production</h2>
-  <div class="form-box">
-    <input type="text" id="coderName" placeholder="Coder Name">
-    <input type="number" id="charts" placeholder="Charts Completed">
-    <textarea id="notes" placeholder="Notes or Comments"></textarea>
-    <button onclick="saveData()">Submit</button>
-    <p id="msg" style="color:green;"></p>
+  <div class="container">
+    <h1>Production Dashboard</h1>
+
+    <!-- Form -->
+    <div class="card">
+      <h2>Add Entry</h2>
+      <form id="prodForm" onsubmit="submitData(event)">
+        <div class="grid">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" required>
+          </div>
+
+          <div>
+          <label for="empId">Emp ID</label>
+            <input id="empId" required>
+          </div>
+
+          <div>
+            <label for="project">Project</label>
+            <input id="project" required>
+          </div>
+
+          <div>
+            <label for="subProject">Sub Project</label>
+            <input id="subProject" required>
+          </div>
+
+          <div>
+            <label for="chartId">Chart ID</label>
+            <input id="chartId" required>
+          </div>
+
+          <div>
+            <label for="pageNo">Page No</label>
+            <input id="pageNo" type="number" min="0" required>
+          </div>
+
+          <div>
+            <label for="dos">DOS (Date of Service)</label>
+            <input id="dos" type="date" required>
+          </div>
+
+          <div>
+            <label for="icd">ICD</label>
+            <input id="icd" required>
+          </div>
+
+          <div>
+            <label for="status">Status</label>
+            <select id="status" required>
+              <option value="">-- Select --</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending">Pending</option>
+              <option value="On Hold">On Hold</option>
+              <option value="Query">Query</option>
+            </select>
+          </div>
+        </div>
+
+        <br>
+        <button type="submit" id="submitBtn">Submit</button>
+        <span id="msg"></span>
+      </form>
+    </div>
+
+    <!-- Table -->
+    <div class="card">
+      <div class="actions">
+        <button onclick="loadData()">Reload Data</button>
+        <button onclick="exportTableToCSV()">Export CSV</button>
+      </div>
+      <div style="overflow:auto">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Timestamp</th>
+              <th>Name</th>
+              <th>Emp ID</th>
+              <th>Project</th>
+              <th>Sub Project</th>
+              <th>Chart ID</th>
+              <th>Page No</th>
+              <th>DOS</th>
+              <th>ICD</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- rows go here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <div class="data-display">
-    <h3>Submitted Data:</h3>
-    <ul id="dataList"></ul>
-  </div>
-
-  <script>
-    function saveData() {
-      let name = document.getElementById('coderName').value;
-      let charts = document.getElementById('charts').value;
-      let notes = document.getElementById('notes').value;
-
-      if (name && charts) {
-        let li = document.createElement('li');
-        li.textContent = name + " - " + charts + " charts - " + notes;
-        document.getElementById('dataList').appendChild(li);
-        document.getElementById('msg').innerText = "Data Saved!";
-      } else {
-        document.getElementById('msg').innerText = "Please fill all fields!";
-      }
-    }
-  </script>
-</body>
-</html>
 <script>
-  if (!sessionStorage.getItem("loggedIn")) {
-    window.location.href = "index.html";
+/**
+ * Your deployed Google Apps Script Web App URL
+ * It must implement:
+ *   function doPost(e){ ... appendRow([...]) ... }
+ *   function doGet(e){ return all rows as JSON }
+ */
+const API = "https://script.google.com/macros/s/AKfycbxj4NpOr-e88PNNLt94isXfw6oLmibuM98Sw1R_sgBQ2BEx5ouzzgwCLRliuzs8lFw26g/exec";
+
+/**
+ * Submit the form to Google Sheets via Apps Script
+ */
+async function submitData(evt){
+  evt.preventDefault();
+  const btn = document.getElementById('submitBtn');
+  const msg = document.getElementById('msg');
+  btn.disabled = true; msg.textContent = "Saving...";
+
+  const payload = {
+    name      : document.getElementById('name').value.trim(),
+    empId     : document.getElementById('empId').value.trim(),
+    project   : document.getElementById('project').value.trim(),
+    subProject: document.getElementById('subProject').value.trim(),
+    chartId   : document.getElementById('chartId').value.trim(),
+    pageNo    : document.getElementById('pageNo').value.trim(),
+    dos       : document.getElementById('dos').value,  // yyyy-mm-dd
+    icd       : document.getElementById('icd').value.trim(),
+    status    : document.getElementById('status').value
+  };
+
+  try{
+    await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    msg.style.color = "green";
+    msg.textContent = "Saved!";
+    document.getElementById('prodForm').reset();
+    loadData(); // refresh the table
+  }catch(e){
+    console.error(e);
+    msg.style.color = "red";
+    msg.textContent = "Failed to save!";
+  }finally{
+    btn.disabled = false;
+    setTimeout(()=> msg.textContent="", 3000);
   }
-</script>
-<button onclick="logout()">Logout</button>
-<script>
-function logout() {
-  sessionStorage.clear();
-  window.location.href = "index.html";
-}
-</script>
-<script>
-function submitData() {
-  let name = document.getElementById('name').value;
-  let charts = document.getElementById('charts').value;
-  let remarks = document.getElementById('remarks').value;
-
-  fetch('https://script.google.com/macros/s/AKfycbxj4NpOr-e88PNNLt94isXfw6oLmibuM98Sw1R_sgBQ2BEx5ouzzgwCLRliuzs8lFw26g/exec', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: name,
-      charts: charts,
-      remarks: remarks
-    })
-  })
-  .then(response => response.text())
-  .then(data => {
-    document.getElementById('msg').innerText = "Data Saved!";
-    loadData();
-  });
 }
 
-function loadData() {
-  fetch('https://script.google.com/macros/s/AKfycbxj4NpOr-e88PNNLt94isXfw6oLmibuM98Sw1R_sgBQ2BEx5ouzzgwCLRliuzs8lFw26g/exec')
-  .then(response => response.json())
-  .then(data => {
-    let list = document.getElementById('dataList');
-    list.innerHTML = "";
-    for (let i = 1; i < data.length; i++) {
-      list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
+/**
+ * Load all rows from the sheet and render the table.
+ * Expecting the Apps Script doGet() to return a 2D array:
+ * [
+ *   ["Timestamp", "Name", "Emp ID", "Project", "Sub Project", "Chart ID", "Page No", "DOS", "ICD", "Status"],
+ *   ["2025-07-26 11:00", "Azhagesan", "E101", ... ],
+ *   ...
+ * ]
+ */
+async function loadData(){
+  const tbody = document.querySelector("#dataTable tbody");
+  tbody.innerHTML = "<tr><td colspan='11'>Loading...</td></tr>";
+
+  try{
+    const res = await fetch(API);
+    const rows = await res.json();
+
+    if(!rows || rows.length <= 1){
+      tbody.innerHTML = "<tr><td colspan='11'>No data</td></tr>";
+      return;
     }
-  });
+
+    // Assume first row is header written on the sheet; skip it
+    tbody.innerHTML = "";
+    for(let i=1; i<rows.length; i++){
+      const r = rows[i];
+      // Defensive: make sure enough columns exist
+      const [
+        timestamp="", name="", empId="", project="", subProject="",
+        chartId="", pageNo="", dos="", icd="", status=""
+      ] = r;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i}</td>
+        <td>${timestamp}</td>
+        <td>${name}</td>
+        <td>${empId}</td>
+        <td>${project}</td>
+        <td>${subProject}</td>
+        <td>${chartId}</td>
+        <td>${pageNo}</td>
+        <td>${dos}</td>
+        <td>${icd}</td>
+        <td>${status}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }catch(e){
+    console.error(e);
+    tbody.innerHTML = "<tr><td colspan='11'>Failed to load data</td></tr>";
+  }
+}
+
+/** Simple CSV export of the table currently displayed */
+function exportTableToCSV(filename = "production_data.csv"){
+  const rows = Array.from(document.querySelectorAll("#dataTable tr"));
+  const csv = rows.map(tr => Array.from(tr.querySelectorAll("th,td"))
+                      .map(td => `"${td.innerText.replace(/"/g, '""')}"`)
+                      .join(",")).join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 window.onload = loadData;
 </script>
-
+</body>
+</html>
