@@ -65,8 +65,9 @@
     function saveData() {
       let name = document.getElementById('coderName').value;
       let charts = document.getElementById('charts').value;
-      let notes = document.getElementById('notes').value;
       let page = document.getElementById('notes').value;
+      let notes = document.getElementById('notes').value;
+      
       if (name && charts) {
         let li = document.createElement('li');
         li.textContent = name + " - " + charts + " charts - " + notes;
@@ -124,26 +125,39 @@ function logout() {
 
   <p id="msg"></p>
 
-  <script>
-    function submitData() {
-      const formURL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSddirQWRJ-RxhjaMse5FRR_nMGcY9lGQW1MZ01hh6NWryl3Vg/formResponse";
-      
-      const data = new FormData();
-      data.append("entry.408181147", document.getElementById("name").value);    // Name
-      data.append("entry.2033432307", document.getElementById("charts").value); // Charts
-      data.append("entry.346047256", document.getElementById("remarks").value); // Remarks
+  <<script>
+const scriptURL = "https://script.google.com/macros/s/AKfycbzolFqb4hRSdQaQIcZFBqlZ6qk-m-HUnlh_Ap4-NivFK5fB5Z5fMcfdARNLBadZwFDozQ/exec";
 
-      fetch(formURL, {
-        method: "POST",
-        body: data,
-        mode: "no-cors"
-      })
-      .then(() => {
-        document.getElementById("msg").innerText = "Data Saved Successfully!";
-        document.getElementById("prodForm").reset();
-      })
-      .catch(err => console.error('Error:', err));
-    }
-  </script>
-</body>
-</html>
+function submitData() {
+  let name = document.getElementById('coderName').value;
+  let charts = document.getElementById('charts').value;
+  let remarks = document.getElementById('notes').value;
+
+  fetch(scriptURL, {
+    method: 'POST',
+    body: JSON.stringify({ name: name, charts: charts, remarks: remarks }),
+    headers: { 'Content-Type': 'application/json' }
+  })
+  .then(res => res.text())
+  .then(msg => {
+    document.getElementById('msg').innerText = "Data Saved!";
+    loadData();
+  })
+  .catch(err => console.error('Error!', err));
+}
+
+function loadData() {
+  fetch(scriptURL)
+    .then(response => response.json())
+    .then(data => {
+      let list = document.getElementById('dataList');
+      list.innerHTML = "";
+      for (let i = 1; i < data.length; i++) {
+        list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
+      }
+    });
+}
+
+window.onload = loadData;
+</script>
+
