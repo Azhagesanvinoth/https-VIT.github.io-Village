@@ -92,40 +92,23 @@ function logout() {
 }
 </script>
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbzolFqb4hRSdQaQIcZFBqlZ6qk-m-HUnlh_Ap4-NivFK5fB5Z5fMcfdARNLBadZwFDozQ/exec";
-
 function submitData() {
-  let name = document.getElementById('coderName').value;
-  let charts = document.getElementById('charts').value;
-  let remarks = document.getElementById('notes').value;
+  const formURL = "https://forms.gle/7JYbVv8opd5pz7bWA"; 
 
-  fetch(scriptURL, {
-    method: 'POST',
-    body: JSON.stringify({ name: name, charts: charts, remarks: remarks }),
-    headers: { 'Content-Type': 'application/json' }
+  const data = new FormData();
+  data.append("entry.408181147", document.getElementById("name").value);    // Name
+  data.append("entry.2033432307", document.getElementById("charts").value); // Charts
+  data.append("entry.ZZZZZZZZZ", document.getElementById("remarks").value); // Remarks (Find this ID)
+
+  fetch(formURL, {
+    method: "POST",
+    body: data,
+    mode: "no-cors"
   })
-  .then(res => res.text())
-  .then(msg => {
-    document.getElementById('msg').innerText = "Data Saved!";
-    loadData();
+  .then(() => {
+    document.getElementById("msg").innerText = "Data Saved Successfully!";
+    document.getElementById("prodForm").reset();
   })
-  .catch(err => console.error('Error!', err));
+  .catch(err => console.error('Error:', err));
 }
-
-function loadData() {
-  fetch(scriptURL)
-    .then(response => response.json())
-    .then(data => {
-      let list = document.getElementById('dataList');
-      list.innerHTML = "";
-      for (let i = 1; i < data.length; i++) {
-        list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
-      }
-    });
-}
-
-window.onload = loadData;
 </script>
-
-
-
