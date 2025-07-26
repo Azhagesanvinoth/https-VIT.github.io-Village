@@ -65,3 +65,9 @@
   </script>
 </body>
 </html>
+<script>
+  if (!sessionStorage.getItem("loggedIn") || sessionStorage.getItem("role") !== "admin") {
+    window.location.href = "index.html";
+  }
+</script>
+
