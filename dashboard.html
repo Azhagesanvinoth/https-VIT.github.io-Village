@@ -65,9 +65,8 @@
     function saveData() {
       let name = document.getElementById('coderName').value;
       let charts = document.getElementById('charts').value;
-      let page = document.getElementById('notes').value;
       let notes = document.getElementById('notes').value;
-      
+
       if (name && charts) {
         let li = document.createElement('li');
         li.textContent = name + " - " + charts + " charts - " + notes;
@@ -92,72 +91,3 @@ function logout() {
   window.location.href = "index.html";
 }
 </script>
-<script>
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Production Data Entry</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 30px; }
-    input, textarea { display: block; margin: 10px 0; padding: 8px; width: 250px; }
-    button { padding: 10px 20px; background: #28a745; color: #fff; border: none; cursor: pointer; }
-    button:hover { background: #218838; }
-    #msg { color: green; margin-top: 10px; }
-  </style>
-</head>
-<body>
-  <h1>Production Data Entry</h1>
-  <form id="prodForm">
-    <label>Name:</label>
-    <input type="text" id="name" required>
-
-    <label>Charts:</label>
-    <input type="number" id="charts" required>
-
-    <label>Remarks:</label>
-    <textarea id="remarks" required></textarea>
-
-     <label>page:</label>
-    <input type="number" id="page" required>
-
-    <button type="button" onclick="submitData()">Submit</button>
-  </form>
-
-  <p id="msg"></p>
-
-  <<script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbzolFqb4hRSdQaQIcZFBqlZ6qk-m-HUnlh_Ap4-NivFK5fB5Z5fMcfdARNLBadZwFDozQ/exec";
-
-function submitData() {
-  let name = document.getElementById('coderName').value;
-  let charts = document.getElementById('charts').value;
-  let remarks = document.getElementById('notes').value;
-
-  fetch(scriptURL, {
-    method: 'POST',
-    body: JSON.stringify({ name: name, charts: charts, remarks: remarks }),
-    headers: { 'Content-Type': 'application/json' }
-  })
-  .then(res => res.text())
-  .then(msg => {
-    document.getElementById('msg').innerText = "Data Saved!";
-    loadData();
-  })
-  .catch(err => console.error('Error!', err));
-}
-
-function loadData() {
-  fetch(scriptURL)
-    .then(response => response.json())
-    .then(data => {
-      let list = document.getElementById('dataList');
-      list.innerHTML = "";
-      for (let i = 1; i < data.length; i++) {
-        list.innerHTML += `<li>${data[i][0]} - ${data[i][1]} charts - ${data[i][2]}</li>`;
-      }
-    });
-}
-
-window.onload = loadData;
-</script>
-
