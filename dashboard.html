@@ -92,23 +92,55 @@ function logout() {
 }
 </script>
 <script>
-function submitData() {
-  const formURL = "https://forms.gle/7JYbVv8opd5pz7bWA"; 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Production Data Entry</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    input, textarea { display: block; margin: 10px 0; padding: 8px; width: 250px; }
+    button { padding: 10px 20px; background: #28a745; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #218838; }
+    #msg { color: green; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Production Data Entry</h1>
+  <form id="prodForm">
+    <label>Name:</label>
+    <input type="text" id="name" required>
 
-  const data = new FormData();
-  data.append("entry.408181147", document.getElementById("name").value);    // Name
-  data.append("entry.2033432307", document.getElementById("charts").value); // Charts
-  data.append("entry.ZZZZZZZZZ", document.getElementById("remarks").value); // Remarks (Find this ID)
+    <label>Charts:</label>
+    <input type="number" id="charts" required>
 
-  fetch(formURL, {
-    method: "POST",
-    body: data,
-    mode: "no-cors"
-  })
-  .then(() => {
-    document.getElementById("msg").innerText = "Data Saved Successfully!";
-    document.getElementById("prodForm").reset();
-  })
-  .catch(err => console.error('Error:', err));
-}
-</script>
+    <label>Remarks:</label>
+    <textarea id="remarks" required></textarea>
+
+    <button type="button" onclick="submitData()">Submit</button>
+  </form>
+
+  <p id="msg"></p>
+
+  <script>
+    function submitData() {
+      const formURL = "https://docs.google.com/forms/u/0/d/e/1FAIpQLSddirQWRJ-RxhjaMse5FRR_nMGcY9lGQW1MZ01hh6NWryl3Vg/formResponse";
+      
+      const data = new FormData();
+      data.append("entry.408181147", document.getElementById("name").value);    // Name
+      data.append("entry.2033432307", document.getElementById("charts").value); // Charts
+      data.append("entry.346047256", document.getElementById("remarks").value); // Remarks
+
+      fetch(formURL, {
+        method: "POST",
+        body: data,
+        mode: "no-cors"
+      })
+      .then(() => {
+        document.getElementById("msg").innerText = "Data Saved Successfully!";
+        document.getElementById("prodForm").reset();
+      })
+      .catch(err => console.error('Error:', err));
+    }
+  </script>
+</body>
+</html>
