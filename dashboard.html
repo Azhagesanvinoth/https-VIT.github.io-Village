@@ -97,7 +97,8 @@ function submitData() {
   let charts = document.getElementById('charts').value;
   let remarks = document.getElementById('remarks').value;
 
-  fetch('YOUR_GOOGLE_SCRIPT_WEB_APP_URL', {
+  fetch('https://script.google.com/macros/s/AKfycby47gQ6KnRz4_o62h7hMQmkekgg7JEbNsTS6wugKu0RsAfDmI6RrPlGHMZFRzOVW7KREw/exec
+', {
     method: 'POST',
     body: JSON.stringify({
       name: name,
@@ -126,5 +127,4 @@ function loadData() {
 
 window.onload = loadData;
 </script>
-https://script.google.com/macros/s/AKfycby47gQ6KnRz4_o62h7hMQmkekgg7JEbNsTS6wugKu0RsAfDmI6RrPlGHMZFRzOVW7KREw/exec
 
